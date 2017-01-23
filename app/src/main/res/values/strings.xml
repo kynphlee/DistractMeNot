@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Signup -->
+    <string name="filename">st_pin</string>
+    <string name="defaultPIN">0000</string>
+
+    <!-- Preferences -->
+    <string name="device_admin">Enable device administration</string>
+
+    <!-- Manual Override -->
+    <string name="manual_override">Passenger Mode</string>
+    <string name="ok">OK</string>
+    <string name="overrideEnable">Enable</string>
+    <string name="overrideDisable">Disable</string>
+    <string name="cancel">Cancel</string>
+    <string name="invalid_pin">Please enter the correct PIN</string>
+
+    <!-- PIN Dialog -->
+    <string name="pin_text">Enter your PIN for manual override</string>
+    <string name="safetext_pin_file">st_pin</string>
+
+    <!-- GPS Provider Status -->
+    <string name="gps_available">Provider Available.</string>
+    <string name="gps_temporary">Provider Temporarily Unavailable.</string>
+    <string name="gps_out_of_service">Provider Out Of Service.</string>
+
+    <string name="app_name">DistractMeNot</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_stsignup">SafeText Registration</string>
+    <string name="safetext_summary">This mobile app monitors and changes text message privileges based on the speed at which a person is travelling.</string>
+    <string name="pin">\t\tEnter your pin</string>
+    <string name="activate">Activate</string>
+    <string name="st_logo">SafeText Logo</string>
+    <string name="st_welcome">Welcome to SafeText.</string>
+    <string name="st_signin_text">Please sign in to get started!</string>
+    <string name="title_activity_ststatus">SafeText Status</string>
+    <string name="st_service_status">Activation Status:</string>
+    <string name="st_service_status_enabled">Enabled</string>
+    <string name="st_service_status_disabled">Disabled</string>
+    <string name="st_sms_count_label">SMS Count: </string>
+    <string name="st_service_active_message">I\'m driving right now. I\'ll text you later. \nPowered by SafeText. \n\nDownload today at\nwww.mysafetext.net</string>
+    <string name="st_sms_sender_label_text">Sender: </string>
+    <string name="st_sms_message_label_text">Message: </string>
+    <string name="st_google_location_services_available">Google Location Services are available.</string>
+    <string name="st_google_location_services_connected">Google Location Services connected.</string>
+    <string name="st_google_location_services_disconnected">Google Location Services disconnected.</string>
+    <string name="title_activity_stutils">STUtils</string>
+    <string name="st_speed">Speed(mph):</string>
+
+</resources>
