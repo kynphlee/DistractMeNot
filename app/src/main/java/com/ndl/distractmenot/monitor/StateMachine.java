@@ -7,7 +7,7 @@ import android.location.Location;
 /**
  * Created by kynphlee on 1/19/17.
  */
-public interface SmsMonitor {
+public interface StateMachine {
 
     public interface MonitorListener {
         public void onCaptureStart();

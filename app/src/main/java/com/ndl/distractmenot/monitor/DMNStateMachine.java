@@ -15,7 +15,7 @@ import static com.ndl.distractmenot.util.DMNUtils.longToDecimal;
 import static com.ndl.distractmenot.util.DMNUtils.speedToMPH;
 
 /* State Machine Implementation */
-public class DMNStateMachine implements SmsMonitor {
+public class DMNStateMachine implements StateMachine {
     private DMNStatus mActivity;
     private DMNLocationMonitor mService;
     private boolean monitorActivitySet = false;
@@ -99,11 +99,11 @@ public class DMNStateMachine implements SmsMonitor {
     /*-------------------------------- States --------------------------------*/
     abstract class State {
 
-        protected SmsMonitor monitor;
+        protected StateMachine monitor;
 //        protected boolean override;
         protected double startTime;
 
-        public State(SmsMonitor monitor) {
+        public State(StateMachine monitor) {
             this.monitor = monitor;
 //            override = false;
         }

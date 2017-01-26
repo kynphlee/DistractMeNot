@@ -1,6 +1,5 @@
 package com.ndl.distractmenot;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,13 +11,13 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.ndl.distractmenot.monitor.DMNLocationMonitor;
+import com.ndl.distractmenot.monitor.DMNLocationMonitor.DMNLocationCallback;
 import com.ndl.distractmenot.monitor.DMNLocationMonitor.MonitorBinder;
 import com.ndl.distractmenot.monitor.MonitorState;
-import com.ndl.distractmenot.monitor.SmsMonitor.MonitorListener;
+import com.ndl.distractmenot.monitor.StateMachine.MonitorListener;
 
-//import android.support.v7.app.AppCompatActivity;
-
-public class DMNStatus extends AppCompatActivity implements MonitorListener{
+public class DMNStatus extends AppCompatActivity
+        implements MonitorListener, DMNLocationCallback {
 
     private final static String TAG = DMNStatus.class.getSimpleName();
 
@@ -28,16 +27,28 @@ public class DMNStatus extends AppCompatActivity implements MonitorListener{
 
     private DMNLocationMonitor monitorService;
     private boolean isBound = false;
+    private DMNStatusCallback statusCallback;
+
+    public interface DMNStatusCallback {
+        public void onDMNStatusAvailable(DMNStatus statusActivity);
+    }
+
+    @Override
+    public void onLocationMonitorAvailable(DMNLocationMonitor locationMonotor) {
+        // TODO: Do the  permission check here
+    }
 
     private ServiceConnection monitorConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MonitorBinder binder = (MonitorBinder) service;
             monitorService = binder.getService();
-            monitorService.getMonitor().setMonitorActivity(DMNStatus.this);
+
+            // TODO: Invert this statement to make permission request easier...
+            monitorService.getStateMachine().setMonitorActivity(DMNStatus.this);
 
             isBound = true;
-            if (monitorService.getMonitor().isOverridden(MonitorState.ACTIVE)) {
+            if (monitorService.getStateMachine().isOverridden(MonitorState.ACTIVE)) {
                 onCaptureStart();
             }
 
@@ -52,7 +63,7 @@ public class DMNStatus extends AppCompatActivity implements MonitorListener{
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            monitorService.getMonitor().setMonitorActivity(null);
+            monitorService.getStateMachine().setMonitorActivity(null);
             isBound = false;
         }
     };

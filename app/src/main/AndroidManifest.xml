@@ -5,16 +5,17 @@
     <!-- Location -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!--Features-->
+    <!-- Features -->
     <uses-feature android:name="android.hardware.location.gps" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
 
-        <!--Activities-->
+        <!-- Activities -->
         <activity android:name=".DMNSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,12 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DMNStatus"></activity>
+        <activity android:name=".DMNStatus" />
 
-        <!--Services-->
-        <service android:name=".monitor.DMNLocationMonitor"
-            android:enabled="true">
-        </service>
+        <!-- Services -->
+        <service
+            android:name=".monitor.DMNLocationMonitor"
+            android:enabled="true"></service>
+
     </application>
 
 </manifest>

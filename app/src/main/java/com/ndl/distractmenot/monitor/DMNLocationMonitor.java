@@ -17,13 +17,14 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Process;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import static com.ndl.distractmenot.util.DMNConstants.*;
 
 /* Location Monitor Service */
 public class DMNLocationMonitor extends Service {
-    private SmsMonitor monitor = null;
+    private StateMachine stateMachine = null;
     private Looper serviceLooper;
     private MonitorServiceHandler serviceHandler;
 
@@ -34,16 +35,10 @@ public class DMNLocationMonitor extends Service {
     private final static String TAG = DMNLocationMonitor.class.getSimpleName();
     private boolean monitorServiceStarted = false;
     private boolean monitorActivityBound = false;
+    private DMNLocationCallback locationCallback;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        HandlerThread stServiceThread = new HandlerThread(
-                "DMNLocationMonitorThread", Process.THREAD_PRIORITY_FOREGROUND);
-        stServiceThread.start();
-        serviceLooper = stServiceThread.getLooper();
-        serviceHandler = new MonitorServiceHandler(serviceLooper);
-        Log.d(TAG, "DMNLocationMonitor service has been created.");
+    public interface DMNLocationCallback {
+        public void onLocationMonitorAvailable(DMNLocationMonitor locationMonotor);
     }
 
     public class MonitorBinder extends Binder {
@@ -52,14 +47,13 @@ public class DMNLocationMonitor extends Service {
         }
     }
 
-
     private final class MonitorServiceHandler extends Handler implements LocationListener {
         public MonitorServiceHandler(Looper looper) {
             super(looper);
 
             // Monitor
-            monitor = new DMNStateMachine();
-            monitor.setMonitorService(DMNLocationMonitor.this);
+            stateMachine = new DMNStateMachine();
+            stateMachine.setMonitorService(DMNLocationMonitor.this);
         }
 
         @Override
@@ -67,7 +61,7 @@ public class DMNLocationMonitor extends Service {
             super.handleMessage(msg);
             Log.d(TAG, "MonitorServiceHandler called.");
 
-            if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+            if (ContextCompat.checkSelfPermission(getApplicationContext(),
                     Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                     && ActivityCompat.checkSelfPermission(getApplicationContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -78,6 +72,8 @@ public class DMNLocationMonitor extends Service {
                 //                                          int[] grantResults)
                 // to handle the case where the user grants the permission. See the documentation
                 // for ActivityCompat#requestPermissions for more details.
+
+
                 return;
             }
 
@@ -102,7 +98,7 @@ public class DMNLocationMonitor extends Service {
             if (location != null && location.hasSpeed()) {
                 Log.d(TAG, "Speed: " + location.getSpeed() +
                         " Location: " + location.getLatitude() + ", " + location.getLongitude());
-                monitor.sense(location);
+                stateMachine.sense(location);
             }
         }
 
@@ -111,36 +107,35 @@ public class DMNLocationMonitor extends Service {
 
         }
 
-        /****************************** GPS Override start *****************************************/
         @Override
         public void onProviderEnabled(String provider) {
-//            monitor.setOverride(MonitorState.ACTIVE, false);
             Log.v(TAG, "GPS is enabled");
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-//            MonitorState state = monitor.currentState();
-//            if (state.equals(MonitorState.PASSIVE)
-//                    || state.equals(MonitorState.DELAY)) {
-//                monitor.setOverride(MonitorState.ACTIVE, true);
-//                monitor.transitionTo(MonitorState.ACTIVE);
-//            } else {
-//                monitor.setOverride(MonitorState.ACTIVE, true);
-//            }
             Log.v(TAG, "GPS is disabled");
         }
-        /****************************** GPS Override end *****************************************/
-
-
     }
 
     /*-------------------------------- Lifecycle Methods --------------------------------*/
     @Override
+    public void onCreate() {
+        super.onCreate();
+        HandlerThread stServiceThread = new HandlerThread(
+                "DMNLocationMonitorThread", Process.THREAD_PRIORITY_FOREGROUND);
+        stServiceThread.start();
+        serviceLooper = stServiceThread.getLooper();
+        serviceHandler = new MonitorServiceHandler(serviceLooper);
+        Log.d(TAG, "DMNLocationMonitor service has been created.");
+    }
+
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // Start listening to
+        // Start listening to location updates
         Message msg = serviceHandler.obtainMessage();
         serviceHandler.handleMessage(msg);
+        Log.d(TAG, "DMNLocationMonitor service has been started.");
 
         return super.onStartCommand(intent, START_REDELIVER_INTENT, startId);
     }
@@ -152,6 +147,7 @@ public class DMNLocationMonitor extends Service {
         Log.d(DEBUG_STRING, "Service Destroyed");
     }
 
+                    /*----------------Service Bindings---------------*/
     @Override
     public IBinder onBind(Intent intent) {
         monitorActivityBound = true;
@@ -173,10 +169,10 @@ public class DMNLocationMonitor extends Service {
     /* STMonitorService Interface methods */
 
     public MonitorState currentState() {
-        return monitor.currentState();
+        return stateMachine.currentState();
     }
 
-    public SmsMonitor getMonitor() {
-        return monitor;
+    public StateMachine getStateMachine() {
+        return stateMachine;
     }
 }
